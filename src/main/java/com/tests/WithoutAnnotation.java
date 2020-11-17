@@ -1,4 +1,4 @@
-package tests;
+package com.tests;
 
 
 public class WithoutAnnotation {

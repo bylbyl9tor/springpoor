@@ -1,4 +1,4 @@
-package springpoor.annotations.analyzers;
+package com.springpoor.annotations.analyzers;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -11,7 +11,8 @@ public class ComponentAnalyzer {
             Class<?> c = Class.forName(path);
             testClass = c.newInstance();
         } catch (Exception e) {
-            logger.error(e.getMessage()+ " object created with null reference");
+            logger.error(e.getMessage());
+            logger.error(" object have null reference");
         }
         return testClass;
     }

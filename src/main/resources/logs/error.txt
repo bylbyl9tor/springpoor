@@ -1,0 +1,4 @@
+2020-11-17 18:22:46.804 [main] ERROR com.Application - object have reference null
+java.lang.NullPointerException: object have reference null
+	at com.springpoor.PoorContext.getBean(PoorContext.java:60) ~[classes/:?]
+	at com.Application.main(Application.java:31) [classes/:?]

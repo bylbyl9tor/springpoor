@@ -1,0 +1,7 @@
+2020-11-17 18:22:46.798 [main] INFO  com.Application - start logging
+2020-11-17 18:22:46.802 [main] INFO  com.springpoor.PoorContext - constructor with no arguments called
+2020-11-17 18:22:46.803 [main] INFO  com.springpoor.PoorContext - request bean with name 1
+2020-11-17 18:22:46.803 [main] INFO  com.springpoor.PoorContext - request bean with name 1
+2020-11-17 18:22:46.803 [main] INFO  com.springpoor.PoorContext - request bean with name 2
+2020-11-17 18:22:46.803 [main] INFO  com.springpoor.PoorContext - request bean with name 2
+2020-11-17 18:22:46.804 [main] INFO  com.springpoor.PoorContext - request bean with name 3
