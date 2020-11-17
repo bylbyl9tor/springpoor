@@ -1,15 +1,15 @@
 package com.springpoor.annotations.analyzers;
 
+import com.springpoor.annotations.PoorComponent;
 import org.apache.logging.log4j.LogManager;
-import com.springpoor.annotations.Scope;
 
-
+@Deprecated
 public class ScopeAnalyzer {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ScopeAnalyzer.class);
 
     public static Object returnScopedObject(Object object) /*throws BeanScopeNotFoundException*/ {
 
-        switch (object.getClass().getAnnotation(Scope.class).type()) {
+        switch (object.getClass().getAnnotation(PoorComponent.class).scope()) {
             case SINGLETON: {
                 return object;
             }

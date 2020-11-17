@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 public class ComponentAnalyzer {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ComponentAnalyzer.class);
 
-    public static Object createValue(String path) {
+    public static Object getNewObject(String path) {
         Object testClass = null;
         try {
             Class<?> c = Class.forName(path);
@@ -15,5 +15,13 @@ public class ComponentAnalyzer {
             logger.error(" object have null reference");
         }
         return testClass;
+    }
+
+    public static Object returnSingleton(Object object) {
+        if (object.getClass() == String.class) {
+            return getNewObject(object.toString());
+        } else {
+            return object;
+        }
     }
 }

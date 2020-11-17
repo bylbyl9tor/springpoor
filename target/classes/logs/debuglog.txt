@@ -1,0 +1,2 @@
+2020-11-17 20:07:58.174 [main] INFO  com.Application - start logging
+2020-11-17 20:07:58.180 [main] INFO  com.springpoor.PoorContext - constructor with no arguments called

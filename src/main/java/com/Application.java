@@ -14,22 +14,18 @@ public class Application {
         try {
             logger.info("start logging");
             ApplicationContext poorContext = new PoorContext();
-            MyClass myClass = (MyClass) poorContext.getBean("1");
-            myClass.print();
-            myClass.string="123";
-            myClass.print();
-            MyClass myclass1 = (MyClass) poorContext.getBean("1");
-            myclass1.print();
 
-            OneClass oneClass = (OneClass) poorContext.getBean("2");
-            oneClass.print();
-            oneClass.string="321";
+            MyClass myClass = (MyClass) poorContext.getBean("1");//prot
+            MyClass myClass1 = (MyClass) poorContext.getBean("1");//prot
+            System.out.println(myClass==myClass1);
 
-            OneClass oneClass1 = (OneClass) poorContext.getBean("2");
-            oneClass1.print();
+            OneClass oneClass = (OneClass) poorContext.getBean("2");//sin
+            OneClass oneClass1 = (OneClass) poorContext.getBean("2");//sin
+            System.out.println(oneClass==oneClass1);
 
-            WithoutAnnotation withoutAnnotation = (WithoutAnnotation) poorContext.getBean("3");
+            WithoutAnnotation withoutAnnotation = (WithoutAnnotation) poorContext.getBean("3");//no annotation
             withoutAnnotation.print();
+
             logger.info("end logging");
         } catch (NullPointerException exception) {
             logger.error(exception.getMessage(),exception);

@@ -1,5 +1,5 @@
 package com.springpoor.exceptions;
-
+@Deprecated
 public class BeanScopeNotFoundException extends Exception {
     public BeanScopeNotFoundException(){
         super();
