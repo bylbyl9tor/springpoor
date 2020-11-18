@@ -1,5 +1,6 @@
-package com.springpoor;
+package com.springpoor.context;
 
+import com.springpoor.ApplicationContext;
 import com.springpoor.annotations.ScopeType;
 import org.apache.logging.log4j.LogManager;
 import com.springpoor.annotations.PoorComponent;
@@ -44,12 +45,12 @@ public class PoorContext implements ApplicationContext {
 
     private void convertToMap(Properties properties) {
         for (Map.Entry<?, ?> key : properties.entrySet()) {
-            Object object = ComponentAnalyzer.getNewObject(key.getValue().toString());
-            if (object.getClass().isAnnotationPresent(PoorComponent.class)) {
-                if (object.getClass().getAnnotation(PoorComponent.class).scope().equals(ScopeType.SINGLETON)) {
-                    context.put(key.getKey().toString(), object);
+            Class<?> clazz = ComponentAnalyzer.getLoadedClass(key.getValue().toString());
+            if (clazz.isAnnotationPresent(PoorComponent.class)) {
+                if (clazz.getAnnotation(PoorComponent.class).scope().equals(ScopeType.SINGLETON)) {
+                    context.put(key.getKey().toString(), ComponentAnalyzer.getNewObject(clazz));
                 } else {
-                    context.put(key.getKey().toString(), key.getValue().toString());
+                    context.put(key.getKey().toString(), clazz);
                 }
             }
         }
@@ -57,7 +58,7 @@ public class PoorContext implements ApplicationContext {
 
     public Object getBean(String beanName) {
         if (context.containsKey(beanName)) {
-            return ComponentAnalyzer.returnSingleton(context.get(beanName));
+            return ComponentAnalyzer.returnScopedBean(context.get(beanName));
         } else {
             logger.warn("bin named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
             return  null;

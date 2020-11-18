@@ -2,7 +2,7 @@ package com;
 
 import com.springpoor.ApplicationContext;
 import org.apache.logging.log4j.LogManager;
-import com.springpoor.PoorContext;
+import com.springpoor.context.PoorContext;
 import com.tests.MyClass;
 import com.tests.OneClass;
 import com.tests.WithoutAnnotation;
