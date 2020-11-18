@@ -47,10 +47,11 @@ public class PoorContext implements ApplicationContext {
         for (Map.Entry<?, ?> key : properties.entrySet()) {
             Class<?> clazz = ComponentAnalyzer.getLoadedClass(key.getValue().toString());
             if (clazz.isAnnotationPresent(PoorComponent.class)) {
-                if (clazz.getAnnotation(PoorComponent.class).scope().equals(ScopeType.SINGLETON)) {
-                    context.put(key.getKey().toString(), ComponentAnalyzer.getNewObject(clazz));
-                } else {
+                if (clazz.getAnnotation(PoorComponent.class).lazy()
+                        || clazz.getAnnotation(PoorComponent.class).scope().equals(ScopeType.PROTOTYPE)) {
                     context.put(key.getKey().toString(), clazz);
+                } else {
+                    context.put(key.getKey().toString(), ComponentAnalyzer.getNewObject(clazz));
                 }
             }
         }
@@ -58,10 +59,21 @@ public class PoorContext implements ApplicationContext {
 
     public Object getBean(String beanName) {
         if (context.containsKey(beanName)) {
-            return ComponentAnalyzer.returnScopedBean(context.get(beanName));
+            Object mapValue =context.get(beanName);
+            if (mapValue.getClass() != Class.class) {
+                return mapValue;
+            } else {
+                Object bean = ComponentAnalyzer.returnScopedBean(mapValue);
+                if (bean.getClass().getAnnotation(PoorComponent.class).scope().equals(ScopeType.SINGLETON)) {
+                    context.put(beanName, bean);
+                    return context.get(beanName);
+                } else {
+                    return bean;
+                }
+            }
         } else {
             logger.warn("bin named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
-            return  null;
+            return null;
         }
     }
 }

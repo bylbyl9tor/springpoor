@@ -1,1 +1,0 @@
-2020-11-18 10:21:54.415 [main] WARN  com.springpoor.context.PoorContext - bin named 3 doesnt exist, check you properties file src/main/resources/beans.properties or annotation

@@ -23,8 +23,9 @@ public class Application {
             OneClass oneClass1 = (OneClass) poorContext.getBean("2");//sin
             System.out.println(oneClass==oneClass1);
 
-            WithoutAnnotation withoutAnnotation = (WithoutAnnotation) poorContext.getBean("3");//no annotation
-            withoutAnnotation.print();
+            WithoutAnnotation withoutAnnotation = (WithoutAnnotation) poorContext.getBean("3");//sin lazy true
+            WithoutAnnotation withoutAnnotation1 = (WithoutAnnotation) poorContext.getBean("3");//sin lazy true
+            System.out.println(withoutAnnotation==withoutAnnotation1);
 
             logger.info("end logging");
         } catch (NullPointerException exception) {

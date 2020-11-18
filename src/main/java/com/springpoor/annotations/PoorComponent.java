@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface PoorComponent {
     ScopeType scope() default ScopeType.SINGLETON;
+    boolean lazy() default false;
 }

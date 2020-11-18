@@ -6,7 +6,6 @@ public class ComponentAnalyzer {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ComponentAnalyzer.class);
 
     public static Object getNewObject(Class<?> clazz) {
-        System.out.println(clazz);
         Object testClass = null;
         try {
             testClass = clazz.newInstance();
@@ -30,7 +29,6 @@ public class ComponentAnalyzer {
 
     public static Object returnScopedBean(Object object) {
         if (object.getClass() == Class.class) {
-            System.out.println(object);
             return getNewObject((Class<?>) object);
         } else {
             return object;
