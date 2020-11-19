@@ -27,11 +27,11 @@ public class ComponentAnalyzer {
         return c;
     }
 
-    public static Object returnScopedBean(Object object) {
+/*    public static Object returnScopedBean(Object object) {
         if (object.getClass() == Class.class) {
             return getNewObject((Class<?>) object);
         } else {
             return object;
         }
-    }
+    }*/
 }

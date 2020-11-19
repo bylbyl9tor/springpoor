@@ -3,7 +3,7 @@ package com.tests;
 import com.springpoor.annotations.PoorComponent;
 import com.springpoor.annotations.ScopeType;
 
-@PoorComponent(scope = ScopeType.EVENMINUTE)
+@PoorComponent(scope = ScopeType.EVENMINUTE, lazy = true)
 public class WithEvenMinute {
     public String string;
 

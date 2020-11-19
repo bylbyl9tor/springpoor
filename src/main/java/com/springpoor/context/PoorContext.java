@@ -65,7 +65,11 @@ public class PoorContext implements ApplicationContext {
                         break;
                     }
                     case EVENMINUTE: {
-                        evenMinutes.put(beanName, clazz);
+                        if (annotation.lazy()) {
+                            evenMinutes.put(beanName, clazz);
+                        } else {
+                            evenMinutes.put(beanName, ComponentAnalyzer.getNewObject(clazz));
+                        }
                         break;
                     }
                 }
