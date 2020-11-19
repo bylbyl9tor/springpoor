@@ -10,7 +10,7 @@ public class ComponentAnalyzer {
         try {
             testClass = clazz.newInstance();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e.getStackTrace());
             logger.error(" object have null reference");
         }
         return testClass;

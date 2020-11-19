@@ -1,7 +1,6 @@
 package com.springpoor.context;
 
 import com.springpoor.ApplicationContext;
-import com.springpoor.annotations.ScopeType;
 import org.apache.logging.log4j.LogManager;
 import com.springpoor.annotations.PoorComponent;
 import com.springpoor.annotations.analyzers.ComponentAnalyzer;
@@ -9,16 +8,19 @@ import com.springpoor.annotations.analyzers.ComponentAnalyzer;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.time.LocalTime;
+import java.util.*;
 
 public class PoorContext implements ApplicationContext {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(PoorContext.class);
 
-    private String FILE_PATH;
+    private final String FILE_PATH;
 
-    private Map<String, Object> context = new HashMap<>();
+    private final Map<String, Object> singletons = new HashMap<>();
+
+    private final Map<String, Object> prototypes = new HashMap<>();
+
+    private final Map<String, Object> evenMinutes = new HashMap<>();
 
     public PoorContext() {
         FILE_PATH = "src/main/resources/beans.properties";
@@ -45,32 +47,69 @@ public class PoorContext implements ApplicationContext {
 
     private void convertToMap(Properties properties) {
         for (Map.Entry<?, ?> key : properties.entrySet()) {
+            String beanName = key.getKey().toString();
             Class<?> clazz = ComponentAnalyzer.getLoadedClass(key.getValue().toString());
             if (clazz.isAnnotationPresent(PoorComponent.class)) {
-                if (clazz.getAnnotation(PoorComponent.class).lazy()
-                        || clazz.getAnnotation(PoorComponent.class).scope().equals(ScopeType.PROTOTYPE)) {
-                    context.put(key.getKey().toString(), clazz);
-                } else {
-                    context.put(key.getKey().toString(), ComponentAnalyzer.getNewObject(clazz));
+                PoorComponent annotation = clazz.getAnnotation(PoorComponent.class);
+                switch (annotation.scope()) {
+                    case SINGLETON: {
+                        if (annotation.lazy()) {
+                            singletons.put(beanName, clazz);
+                        } else {
+                            singletons.put(beanName, ComponentAnalyzer.getNewObject(clazz));
+                        }
+                        break;
+                    }
+                    case PROTOTYPE: {
+                        prototypes.put(beanName, clazz);
+                        break;
+                    }
+                    case EVENMINUTE: {
+                        evenMinutes.put(beanName, clazz);
+                        break;
+                    }
                 }
             }
         }
     }
 
+    public Set<String> getAllBeansNames() {
+        Set<String> allBeanNames = new HashSet<>();
+        allBeanNames.addAll(singletons.keySet());
+        allBeanNames.addAll(prototypes.keySet());
+        allBeanNames.addAll(evenMinutes.keySet());
+        return allBeanNames;
+    }
+
     public Object getBean(String beanName) {
-        if (context.containsKey(beanName)) {
-            Object mapValue =context.get(beanName);
-            if (mapValue.getClass() != Class.class) {
-                return mapValue;
+        Object mapValue;
+        if (singletons.containsKey(beanName)) { //if object is Class->create new and put; else get;
+            mapValue = singletons.get(beanName);
+            if (mapValue.getClass() == Class.class) {
+                Object object = ComponentAnalyzer.getNewObject((Class<?>) mapValue);
+                singletons.put(beanName, object);
+                return object;
             } else {
-                Object bean = ComponentAnalyzer.returnScopedBean(mapValue);
-                if (bean.getClass().getAnnotation(PoorComponent.class).scope().equals(ScopeType.SINGLETON)) {
-                    context.put(beanName, bean);
-                    return context.get(beanName);
+                return mapValue;
+            }
+        } else if (prototypes.containsKey(beanName)) { //return new object
+            return ComponentAnalyzer.getNewObject((Class<?>) prototypes.get(beanName));
+        } else if (evenMinutes.containsKey(beanName)) {
+            int minutes = LocalTime.now().getMinute();//get minutes
+            mapValue = evenMinutes.get(beanName);
+            Object object;
+            if (mapValue.getClass() == Class.class) { //if object is Class-> return new and put;
+                object = ComponentAnalyzer.getNewObject((Class<?>) mapValue);
+                evenMinutes.put(beanName, object);
+            } else { //minutes even->return new object; else return old;
+                if (minutes % 2 == 0) {
+                    object = ComponentAnalyzer.getNewObject(mapValue.getClass());
+                    evenMinutes.put(beanName, object);
                 } else {
-                    return bean;
+                    object = evenMinutes.get(beanName);
                 }
             }
+            return object;
         } else {
             logger.warn("bin named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
             return null;
