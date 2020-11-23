@@ -1,6 +1,7 @@
 package com.springpoor.context;
 
-import com.springpoor.ApplicationContext;
+import com.springpoor.exceptions.BeanNotFoundException;
+import com.springpoor.exceptions.PoorException;
 import org.apache.logging.log4j.LogManager;
 import com.springpoor.annotations.PoorComponent;
 import com.springpoor.annotations.analyzers.ComponentAnalyzer;
@@ -8,67 +9,81 @@ import com.springpoor.annotations.analyzers.ComponentAnalyzer;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.*;
 
+/**
+ * The class is used to initialize the application context from the .properties file. <br/>
+ * <br/>Has three public methods:<br/> 1){@link PoorContext#getAllBeansNames()}  returns all bean names
+ * <br/>2) {@link PoorContext#getBean(String)} returns a bean object
+ * <br/>3) {@link PoorContext#getBeanInfo(String)} meta information about bean
+ *
+ * @version 1.0
+ * @autor Vitaliy Ritus
+ */
 public class PoorContext implements ApplicationContext {
+
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(PoorContext.class);
+
+    private static PoorContext instance;
 
     private final String FILE_PATH;
 
-    private final Map<String, Object> singletons = new HashMap<>();
+    private final Map<String, PoorBeanDefinition> metaInfo = new HashMap<>();
 
-    private final Map<String, Object> prototypes = new HashMap<>();
+    private final Map<String, Object> instanceObjects = new HashMap<>();
 
-    private final Map<String, Object> evenMinutes = new HashMap<>();
-
-    public PoorContext() {
+    private PoorContext() throws IOException, PoorException {
         FILE_PATH = "src/main/resources/beans.properties";
         convertToMap(readPropertyFile(FILE_PATH));
         logger.info("constructor with no arguments called");
     }
 
-    public PoorContext(String filePath) {
-        FILE_PATH = filePath;
-        convertToMap(readPropertyFile(FILE_PATH));
-        logger.info("constructor with custom filepath " + filePath + " called");
+    public static PoorContext getInstance() throws IOException, PoorException {
+        if (instance == null) {
+            instance = new PoorContext();
+        }
+        return instance;
     }
 
-    private Properties readPropertyFile(String str) {
-        File file = new File(str);
+    /**
+     * Method for getting the Properties object with data from the configuration file {@link PoorContext#FILE_PATH}
+     *
+     * @param filePath configuration file path
+     * @return returns a set of Properties from the config file or null on error
+     * @throws IOException if there was an error reading from the input stream.
+     */
+    private Properties readPropertyFile(final String filePath) throws IOException {
+        File file = new File(filePath);
         Properties properties = new Properties();
-        try {
-            properties.load(new FileReader(file));
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+        properties.load(new FileReader(file));
         return properties;
     }
 
-    private void convertToMap(Properties properties) {
+    /**
+     * The method fills the context with data.
+     * The method takes an element from Properties, the method {@link ComponentAnalyzer#getLoadedClass(String)}
+     * creates its Class, checks if annotation is present {@link PoorComponent},
+     * if present, the bean goes to the field {@link PoorContext#metaInfo}, then if it has a
+     * {@link com.springpoor.annotations.ScopeType#SINGLETON} or {@link com.springpoor.annotations.ScopeType#EVENMINUTE}
+     * and {@link PoorComponent#lazy()} == false, then a new instance of the object is created and goes to the field
+     * {@link PoorContext#instanceObjects}
+     *
+     * @param properties properties, {@link PoorContext#readPropertyFile(String)} method result
+     * @see PoorContext#convertToMap(Properties)
+     * @see ComponentAnalyzer
+     */
+    private void convertToMap(Properties properties) throws PoorException {
         for (Map.Entry<?, ?> key : properties.entrySet()) {
             String beanName = key.getKey().toString();
             Class<?> clazz = ComponentAnalyzer.getLoadedClass(key.getValue().toString());
             if (clazz.isAnnotationPresent(PoorComponent.class)) {
-                PoorComponent annotation = clazz.getAnnotation(PoorComponent.class);
-                switch (annotation.scope()) {
-                    case SINGLETON: {
-                        if (annotation.lazy()) {
-                            singletons.put(beanName, clazz);
-                        } else {
-                            singletons.put(beanName, ComponentAnalyzer.getNewObject(clazz));
-                        }
-                        break;
-                    }
-                    case PROTOTYPE: {
-                        prototypes.put(beanName, clazz);
-                        break;
-                    }
+                PoorBeanDefinition beanCandidate = new PoorBeanDefinition(clazz);
+                metaInfo.put(beanName, beanCandidate);
+                switch (beanCandidate.getScopeType()) {
+                    case SINGLETON:
                     case EVENMINUTE: {
-                        if (annotation.lazy()) {
-                            evenMinutes.put(beanName, clazz);
-                        } else {
-                            evenMinutes.put(beanName, ComponentAnalyzer.getNewObject(clazz));
+                        if (!beanCandidate.isLazy()) {
+                            instanceObjects.put(beanName, ComponentAnalyzer.getNewObject(clazz));
                         }
                         break;
                     }
@@ -77,46 +92,56 @@ public class PoorContext implements ApplicationContext {
         }
     }
 
+    /**
+     * The method returns a set of bean names that are stored in the PoorContext.
+     *
+     * @return returns the set of names of all beans.
+     * @see PoorContext#metaInfo
+     */
     public Set<String> getAllBeansNames() {
-        Set<String> allBeanNames = new HashSet<>();
-        allBeanNames.addAll(singletons.keySet());
-        allBeanNames.addAll(prototypes.keySet());
-        allBeanNames.addAll(evenMinutes.keySet());
-        return allBeanNames;
+        return metaInfo.keySet();
     }
 
-    public Object getBean(String beanName) {
-        Object mapValue;
-        if (singletons.containsKey(beanName)) { //if object is Class->create new and put; else get;
-            mapValue = singletons.get(beanName);
-            if (mapValue.getClass() == Class.class) {
-                Object object = ComponentAnalyzer.getNewObject((Class<?>) mapValue);
-                singletons.put(beanName, object);
-                return object;
+    /**
+     * The method returns String with information about bean(class, scope(), lazy()).
+     *
+     * @return returns the set of names of all beans.
+     * @throws BeanNotFoundException
+     * @see PoorBeanDefinition#toString()
+     * @see PoorContext#metaInfo
+     */
+    public String getBeanInfo(String beanName) throws BeanNotFoundException {
+        try {
+            return metaInfo.get(beanName).toString();
+        } catch (Exception exception) {
+            logger.error("bin named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
+            throw new BeanNotFoundException(exception);
+        }
+    }
+
+    /**
+     * The method returns an bean from context.
+     * If {@link PoorContext#metaInfo} contains beanName, method get bean {@link PoorContext#metaInfo}
+     * we call the {@link com.springpoor.annotations.ScopeType#needNewObject(boolean)} call the method that
+     * returns true if need, create a new instance of the bean and false if we return the existing one.
+     * If bean name not found - null will be returned
+     *
+     * @param beanName bean name
+     * @return if the bean name is not found null will be returned, if found, then the bean instance
+     * @throws BeanNotFoundException
+     * @see com.springpoor.annotations.ScopeType#needNewObject(boolean)
+     */
+    public Object getBean(String beanName) throws PoorException, BeanNotFoundException {
+        if (metaInfo.containsKey(beanName)) {
+            PoorBeanDefinition poorBeanDefinition = metaInfo.get(beanName);
+            if (poorBeanDefinition.getScopeType().needNewObject(instanceObjects.containsKey(beanName))) {
+                return ComponentAnalyzer.getNewObject(poorBeanDefinition.getClazz());
             } else {
-                return mapValue;
+                return instanceObjects.get(beanName);
             }
-        } else if (prototypes.containsKey(beanName)) { //return new object
-            return ComponentAnalyzer.getNewObject((Class<?>) prototypes.get(beanName));
-        } else if (evenMinutes.containsKey(beanName)) {
-            int minutes = LocalTime.now().getMinute();//get minutes
-            mapValue = evenMinutes.get(beanName);
-            Object object;
-            if (mapValue.getClass() == Class.class) { //if object is Class-> return new and put;
-                object = ComponentAnalyzer.getNewObject((Class<?>) mapValue);
-                evenMinutes.put(beanName, object);
-            } else { //minutes even->return new object; else return old;
-                if (minutes % 2 == 0) {
-                    object = ComponentAnalyzer.getNewObject(mapValue.getClass());
-                    evenMinutes.put(beanName, object);
-                } else {
-                    object = evenMinutes.get(beanName);
-                }
-            }
-            return object;
         } else {
-            logger.warn("bin named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
-            return null;
+            logger.error("bin named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
+            throw new BeanNotFoundException("bean with name " + beanName + " not found in context");
         }
     }
 }

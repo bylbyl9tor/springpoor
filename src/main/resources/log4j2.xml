@@ -69,30 +69,3 @@
     </Loggers>
 
 </Configuration>
-<!--
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO" strict="true">
-    <Appenders >
-        <Console name="Console" target="SYSTEM_OUT">
-            <LevelRangeFilter minLevel="WARN" maxLevel="OFF" onMatch="ACCEPT" onMismatch="DENY"></LevelRangeFilter>
-            <PatternLayout pattern="%style{%date{DEFAULT}}{yellow} %highlight{ [%t] %-5level: %msg%n%throwable}"/>
-        </Console>
-        <File name="MyFile" fileName="src/main/resources/log.txt" immediateFlush="false" append="false">
-            <LevelRangeFilter minLevel="INFO" maxLevel="ERROR" onMatch="ACCEPT" onMismatch="DENY"></LevelRangeFilter>
-            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-        </File>
-    </Appenders>
-    <Loggers>
-&lt;!&ndash;        <Logger name="com.Application" level="WARN">
-            <AppenderRef ref="Console"/>
-        </Logger>&ndash;&gt;
-        <Logger name="com.Application">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="MyFile"/>
-        </Logger>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
-        </Root>
-    </Loggers>
-</Configuration>
--->

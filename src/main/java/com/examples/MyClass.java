@@ -1,13 +1,13 @@
-package com.tests;
+package com.examples;
 
 import com.springpoor.annotations.PoorComponent;
 import com.springpoor.annotations.ScopeType;
 
-@PoorComponent(scope = ScopeType.SINGLETON, lazy = false)
-public class WithoutAnnotation {
+@PoorComponent(scope = ScopeType.PROTOTYPE)
+public class MyClass {
     public String string;
 
-    public WithoutAnnotation() {
+    public MyClass() {
     }
 
     public void print() {

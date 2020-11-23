@@ -1,4 +1,4 @@
-package com.tests;
+package com.examples;
 
 import com.springpoor.annotations.PoorComponent;
 import com.springpoor.annotations.ScopeType;

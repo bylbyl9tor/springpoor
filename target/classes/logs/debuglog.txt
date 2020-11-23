@@ -1,7 +1,7 @@
-2020-11-19 17:52:06.225 [main] INFO  com.Application - start logging
-2020-11-19 17:52:06.231 [main] INFO  com.springpoor.annotations.analyzers.ComponentAnalyzer - class com.tests.MyClass was loaded
-2020-11-19 17:52:06.233 [main] INFO  com.springpoor.annotations.analyzers.ComponentAnalyzer - class com.tests.OneClass was loaded
-2020-11-19 17:52:06.234 [main] INFO  com.springpoor.annotations.analyzers.ComponentAnalyzer - class com.tests.WithoutAnnotation was loaded
-2020-11-19 17:52:06.234 [main] INFO  com.springpoor.annotations.analyzers.ComponentAnalyzer - class com.tests.WithEvenMinute was loaded
-2020-11-19 17:52:06.234 [main] INFO  com.springpoor.context.PoorContext - constructor with no arguments called
-2020-11-19 17:52:06.238 [main] INFO  com.Application - end logging
+2020-11-23 12:49:56.730 [main] INFO  com.Application - Application started
+2020-11-23 12:49:56.737 [main] INFO  com.springpoor.annotations.analyzers.ComponentAnalyzer - class com.examples.MyClass was loaded
+2020-11-23 12:49:56.739 [main] INFO  com.springpoor.annotations.analyzers.ComponentAnalyzer - class com.examples.OneClass was loaded
+2020-11-23 12:49:56.740 [main] INFO  com.springpoor.annotations.analyzers.ComponentAnalyzer - class com.examples.WithoutAnnotation was loaded
+2020-11-23 12:49:56.740 [main] INFO  com.springpoor.annotations.analyzers.ComponentAnalyzer - class com.examples.WithEvenMinute was loaded
+2020-11-23 12:49:56.740 [main] INFO  com.springpoor.context.PoorContext - constructor with no arguments called
+2020-11-23 12:49:56.747 [main] INFO  com.Application - Application finished work

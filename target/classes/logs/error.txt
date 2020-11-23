@@ -1,0 +1,2 @@
+2020-11-23 12:49:56.746 [main] ERROR com.springpoor.context.PoorContext - bin named 0 doesnt exist, check you properties file src/main/resources/beans.properties or annotation
+2020-11-23 12:49:56.747 [main] ERROR com.Application - com.springpoor.exceptions.BeanNotFoundException: bean with name 0 not found in context

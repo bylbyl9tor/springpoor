@@ -1,25 +1,31 @@
 package com;
 
-import com.springpoor.ApplicationContext;
-import com.tests.WithEvenMinute;
+import com.springpoor.context.ApplicationContext;
+import com.examples.WithEvenMinute;
+import com.springpoor.exceptions.BeanNotFoundException;
+import com.springpoor.exceptions.PoorException;
 import org.apache.logging.log4j.LogManager;
 import com.springpoor.context.PoorContext;
-import com.tests.MyClass;
-import com.tests.OneClass;
-import com.tests.WithoutAnnotation;
+import com.examples.MyClass;
+import com.examples.OneClass;
+import com.examples.WithoutAnnotation;
+
+import java.io.IOException;
 
 
 public class Application {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(Application.class);
 
     public static void main(String[] args) {
-
         try {
-            logger.info("start logging");
-            ApplicationContext poorContext = new PoorContext();
-            System.out.println(poorContext.getAllBeansNames());
+            logger.info("Application started");
+            ApplicationContext poorContext = PoorContext.getInstance();
+            for (String string : poorContext.getAllBeansNames()) {
+                System.out.println(poorContext.getBeanInfo(string));
+            }
+            //System.out.println(poorContext.getBeanInfo("string"));
 
-            MyClass myClass = (MyClass) poorContext.getBean("1");//prot
+            MyClass myClass = (MyClass) poorContext.getBean("0");//prot
             MyClass myClass1 = (MyClass) poorContext.getBean("1");//prot
             System.out.println("prototype ==prototype1\n" + (myClass == myClass1));
 
@@ -37,9 +43,9 @@ public class Application {
             System.out.println("evenminute==evenminute\n" + (withEvenMinute == withEvenMinute1));
             System.out.println("evenminute1==evenminute2\n" + (withEvenMinute1 == withEvenMinute2));
 
-            logger.info("end logging");
-        } catch (NullPointerException exception) {
-            logger.error(exception.getMessage(), exception);
+        } catch (NullPointerException | IOException | PoorException | BeanNotFoundException exception) {
+            logger.error(exception);
         }
+        logger.info("Application finished work");
     }
 }
