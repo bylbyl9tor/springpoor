@@ -1,16 +1,18 @@
 package com.examples;
 
+import com.springpoor.annotations.PoorAutowired;
 import com.springpoor.annotations.PoorComponent;
 import com.springpoor.annotations.ScopeType;
 
-@PoorComponent(scope = ScopeType.SINGLETON ,lazy = false)
+@PoorComponent(scope = ScopeType.SINGLETON, lazy = false)
 public class OneClass {
-    public String string;
+    @PoorAutowired
+    private MyClass myClass;
 
     public OneClass() {
     }
 
     public void print() {
-        System.out.println(string);
+        System.out.println(myClass);
     }
 }

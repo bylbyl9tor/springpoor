@@ -1,9 +1,7 @@
 package com.springpoor.context;
 
 
-import com.springpoor.context.PoorContext;
 import com.springpoor.exceptions.BeanNotFoundException;
-import com.springpoor.exceptions.PoorException;
 
 import java.util.Set;
 
@@ -24,15 +22,15 @@ public interface ApplicationContext {
      * The method returns a bean.
      *
      * @param beanName bean name
-     * @return
+     * @return bean
      */
-    Object getBean(String beanName) throws PoorException, BeanNotFoundException;
+    Object getBean(String beanName) throws Exception;
 
     /**
      * The method returns bean information.
      *
      * @param beanName bean name
-     * @return
+     * @return bean info
      */
     String getBeanInfo(String beanName) throws BeanNotFoundException;
 

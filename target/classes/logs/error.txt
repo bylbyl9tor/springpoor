@@ -1,2 +1,9 @@
-2020-11-23 12:49:56.746 [main] ERROR com.springpoor.context.PoorContext - bin named 0 doesnt exist, check you properties file src/main/resources/beans.properties or annotation
-2020-11-23 12:49:56.747 [main] ERROR com.Application - com.springpoor.exceptions.BeanNotFoundException: bean with name 0 not found in context
+2020-11-24 18:06:38.839 [main] ERROR com.Application - In class com.examples.MyClass field  withEvenMinutewithEvenMinute tagged with annotation @PoorAutowired, but class com.examples.WithEvenMinute not a bean( not tagged with annotation @Component
+com.springpoor.exceptions.AutowiredFieldComponentException: In class com.examples.MyClass field  withEvenMinutewithEvenMinute tagged with annotation @PoorAutowired, but class com.examples.WithEvenMinute not a bean( not tagged with annotation @Component
+	at com.springpoor.context.PoorContext.injectAutowiredFields(PoorContext.java:117) ~[classes/:?]
+	at com.springpoor.context.PoorContext.getBean(PoorContext.java:169) ~[classes/:?]
+	at com.springpoor.context.PoorContext.injectAutowiredFields(PoorContext.java:121) ~[classes/:?]
+	at com.springpoor.context.PoorContext.autowiredFilter(PoorContext.java:106) ~[classes/:?]
+	at com.springpoor.context.PoorContext.<init>(PoorContext.java:45) ~[classes/:?]
+	at com.springpoor.context.PoorContext.getInstance(PoorContext.java:51) ~[classes/:?]
+	at com.Application.main(Application.java:16) [classes/:?]

@@ -1,5 +1,8 @@
 package com.springpoor.context;
 
+import com.springpoor.annotations.PoorAutowired;
+import com.springpoor.annotations.ScopeType;
+import com.springpoor.exceptions.AutowiredFieldComponentException;
 import com.springpoor.exceptions.BeanNotFoundException;
 import com.springpoor.exceptions.PoorException;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +12,9 @@ import com.springpoor.annotations.analyzers.ComponentAnalyzer;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The class is used to initialize the application context from the .properties file. <br/>
@@ -30,15 +35,18 @@ public class PoorContext implements ApplicationContext {
 
     private final Map<String, PoorBeanDefinition> metaInfo = new HashMap<>();
 
-    private final Map<String, Object> instanceObjects = new HashMap<>();
+    private final Map<String, Object> instanceObjects = new ConcurrentHashMap<>();
 
-    private PoorContext() throws IOException, PoorException {
+    private final Map<String, String> pathAndBeanName = new HashMap<>();
+
+    private PoorContext() throws Exception {
         FILE_PATH = "src/main/resources/beans.properties";
         convertToMap(readPropertyFile(FILE_PATH));
+        autowiredFilter();
         logger.info("constructor with no arguments called");
     }
 
-    public static PoorContext getInstance() throws IOException, PoorException {
+    public static PoorContext getInstance() throws Exception {
         if (instance == null) {
             instance = new PoorContext();
         }
@@ -79,6 +87,7 @@ public class PoorContext implements ApplicationContext {
             if (clazz.isAnnotationPresent(PoorComponent.class)) {
                 PoorBeanDefinition beanCandidate = new PoorBeanDefinition(clazz);
                 metaInfo.put(beanName, beanCandidate);
+                pathAndBeanName.put(key.getValue().toString(), beanName);
                 switch (beanCandidate.getScopeType()) {
                     case SINGLETON:
                     case EVENMINUTE: {
@@ -90,6 +99,30 @@ public class PoorContext implements ApplicationContext {
                 }
             }
         }
+    }
+
+    private void autowiredFilter() throws Exception {
+        for (Map.Entry<?, ?> object : instanceObjects.entrySet()) {
+            instanceObjects.replace(object.getKey().toString(), injectAutowiredFields(object.getValue()));
+        }
+    }
+
+    private Object injectAutowiredFields(Object object) throws Exception {
+        for (Field field : object.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(PoorAutowired.class)) {
+                String beanName = pathAndBeanName.get(field.getType().getCanonicalName());
+                if (beanName == null) {
+                    throw new AutowiredFieldComponentException("In class " + object.getClass().getCanonicalName() +
+                            " field " + " " + field.getName() + field.getName() +
+                            " tagged with annotation @PoorAutowired, but class " + field.getType().getCanonicalName() +
+                            " not a bean (not tagged with annotation @Component)");
+                }
+                field.setAccessible(true);
+                field.set(object, getBean(beanName));
+                field.setAccessible(false);
+            }
+        }
+        return object;
     }
 
     /**
@@ -106,7 +139,6 @@ public class PoorContext implements ApplicationContext {
      * The method returns String with information about bean(class, scope(), lazy()).
      *
      * @return returns the set of names of all beans.
-     * @throws BeanNotFoundException
      * @see PoorBeanDefinition#toString()
      * @see PoorContext#metaInfo
      */
@@ -128,14 +160,17 @@ public class PoorContext implements ApplicationContext {
      *
      * @param beanName bean name
      * @return if the bean name is not found null will be returned, if found, then the bean instance
-     * @throws BeanNotFoundException
      * @see com.springpoor.annotations.ScopeType#needNewObject(boolean)
      */
-    public Object getBean(String beanName) throws PoorException, BeanNotFoundException {
+    public Object getBean(String beanName) throws Exception {
         if (metaInfo.containsKey(beanName)) {
             PoorBeanDefinition poorBeanDefinition = metaInfo.get(beanName);
             if (poorBeanDefinition.getScopeType().needNewObject(instanceObjects.containsKey(beanName))) {
-                return ComponentAnalyzer.getNewObject(poorBeanDefinition.getClazz());
+                Object object = injectAutowiredFields(ComponentAnalyzer.getNewObject(poorBeanDefinition.getClazz()));
+                if (poorBeanDefinition.getScopeType() != ScopeType.PROTOTYPE) {
+                    instanceObjects.put(beanName, object);
+                }
+                return object;
             } else {
                 return instanceObjects.get(beanName);
             }

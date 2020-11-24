@@ -2,20 +2,13 @@ package com.examples;
 
 import com.springpoor.annotations.PoorAutowired;
 import com.springpoor.annotations.PoorComponent;
-import com.springpoor.annotations.ScopeType;
 
-@PoorComponent(scope = ScopeType.PROTOTYPE)
-public class MyClass {
+@PoorComponent
+public class Auto implements Car {
     @PoorAutowired
     private WithEvenMinute withEvenMinute;
-    @PoorAutowired
-    private WithoutAnnotation withoutAnnotation;
-
-    public MyClass() {
-    }
-
+    @Override
     public void print() {
         System.out.println(withEvenMinute);
-        System.out.println(withoutAnnotation);
     }
 }

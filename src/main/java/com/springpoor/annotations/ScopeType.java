@@ -48,7 +48,7 @@ public enum ScopeType {
             if (LocalTime.now().getMinute() % 2 == 0) {
                 return true;
             } else {
-                return isContextHaveObjectInstance ? true : false;
+                return isContextHaveObjectInstance ? false : true;
             }
         }
     };
