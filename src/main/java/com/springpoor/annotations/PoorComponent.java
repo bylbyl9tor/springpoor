@@ -28,5 +28,4 @@ public @interface PoorComponent {
      * @return boolean
      */
     boolean lazy() default false;
-
 }

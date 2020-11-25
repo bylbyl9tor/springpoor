@@ -4,13 +4,11 @@ import com.springpoor.annotations.PoorComponent;
 import com.springpoor.annotations.ScopeType;
 
 @PoorComponent(scope = ScopeType.SINGLETON, lazy = false)
-public class WithoutAnnotation {
-    public String string;
-
-    public WithoutAnnotation() {
+public class WithoutAutowired {
+    public WithoutAutowired() {
     }
 
     public void print() {
-        System.out.println(string);
+        System.out.println();
     }
 }

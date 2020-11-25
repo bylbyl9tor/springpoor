@@ -48,7 +48,7 @@ public enum ScopeType {
             if (LocalTime.now().getMinute() % 2 == 0) {
                 return true;
             } else {
-                return isContextHaveObjectInstance ? true : false;
+                return isContextHaveObjectInstance ? false : true;
             }
         }
     };
@@ -58,7 +58,7 @@ public enum ScopeType {
      * When it returns true it means that a new instance will be created, when it returns false it means that the old instance will be taken
      *
      * @param isContextHaveObjectInstance true when the bean instance be in the context
-     * @return
+     * @return boolean
      */
     public abstract boolean needNewObject(boolean isContextHaveObjectInstance);
 }

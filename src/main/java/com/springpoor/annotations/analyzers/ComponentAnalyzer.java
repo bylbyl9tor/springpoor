@@ -3,11 +3,13 @@ package com.springpoor.annotations.analyzers;
 import com.springpoor.exceptions.PoorException;
 import org.apache.logging.log4j.LogManager;
 
+
 /**
  * @version 1.0
  * @autor Vitaliy Ritus
  */
 public class ComponentAnalyzer {
+
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ComponentAnalyzer.class);
 
     /**
@@ -17,7 +19,7 @@ public class ComponentAnalyzer {
      * @return new instance
      */
     public static Object getNewObject(Class<?> clazz) throws PoorException {
-        Object newInstanceOfClass = null;
+        Object newInstanceOfClass;
         try {
             newInstanceOfClass = clazz.getDeclaredConstructor().newInstance();
         } catch (Exception exception) {
