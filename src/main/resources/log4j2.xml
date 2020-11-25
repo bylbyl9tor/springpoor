@@ -28,7 +28,6 @@
         <RollingFile name="warningLog" fileName="src/main/resources/logs/warning.txt"
                      filePattern="${sys:APP_LOG_ROOT}/application-info-%d{yyyy-MM-dd}-%i.log" append="false">
 
-            <!-- Matches only INFO level -->
             <LevelRangeFilter minLevel="WARN" maxLevel="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
 
             <PatternLayout pattern="${LOG_PATTERN}"/>
@@ -41,7 +40,6 @@
         <RollingFile name="errorLog" fileName="src/main/resources/logs/error.txt"
                      filePattern="${sys:APP_LOG_ROOT}/application-error-%d{yyyy-MM-dd}-%i.log" append="false">
 
-            <!-- Matches only ERROR level -->
             <LevelRangeFilter minLevel="ERROR" maxLevel="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
 
             <PatternLayout pattern="${LOG_PATTERN}"/>

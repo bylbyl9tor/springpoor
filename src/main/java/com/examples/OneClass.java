@@ -8,7 +8,6 @@ import com.springpoor.annotations.ScopeType;
 public class OneClass {
     @PoorAutowired
     private MyClass myClass;
-
     public OneClass() {
     }
 

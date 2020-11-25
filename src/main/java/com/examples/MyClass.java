@@ -8,14 +8,11 @@ import com.springpoor.annotations.ScopeType;
 public class MyClass {
     @PoorAutowired
     private WithEvenMinute withEvenMinute;
-    @PoorAutowired
-    private WithoutAnnotation withoutAnnotation;
 
     public MyClass() {
     }
 
     public void print() {
         System.out.println(withEvenMinute);
-        System.out.println(withoutAnnotation);
     }
 }

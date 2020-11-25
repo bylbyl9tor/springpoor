@@ -2,7 +2,7 @@ package com.springpoor.context;
 
 import com.springpoor.annotations.PoorAutowired;
 import com.springpoor.annotations.ScopeType;
-import com.springpoor.exceptions.AutowiredFieldComponentException;
+import com.springpoor.exceptions.AutowiredFieldNotComponentException;
 import com.springpoor.exceptions.BeanNotFoundException;
 import com.springpoor.exceptions.PoorException;
 import org.apache.logging.log4j.LogManager;
@@ -112,8 +112,8 @@ public class PoorContext implements ApplicationContext {
             if (field.isAnnotationPresent(PoorAutowired.class)) {
                 String beanName = pathAndBeanName.get(field.getType().getCanonicalName());
                 if (beanName == null) {
-                    throw new AutowiredFieldComponentException("In class " + object.getClass().getCanonicalName() +
-                            " field " + " " + field.getName() + field.getName() +
+                    throw new AutowiredFieldNotComponentException("In class " + object.getClass().getCanonicalName() +
+                            " field " + field.getName() + " " + field.getName() +
                             " tagged with annotation @PoorAutowired, but class " + field.getType().getCanonicalName() +
                             " not a bean (not tagged with annotation @Component)");
                 }
@@ -146,8 +146,8 @@ public class PoorContext implements ApplicationContext {
         try {
             return metaInfo.get(beanName).toString();
         } catch (Exception exception) {
-            logger.error("bin named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
-            throw new BeanNotFoundException(exception);
+            logger.error("bean named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
+            throw new BeanNotFoundException("bean named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
         }
     }
 
@@ -175,7 +175,7 @@ public class PoorContext implements ApplicationContext {
                 return instanceObjects.get(beanName);
             }
         } else {
-            logger.error("bin named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
+            logger.error("bean named " + beanName + " doesnt exist, check you properties file " + FILE_PATH + " or annotation");
             throw new BeanNotFoundException("bean with name " + beanName + " not found in context");
         }
     }
